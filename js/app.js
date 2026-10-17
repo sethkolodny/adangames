@@ -1,5 +1,5 @@
 (function () {
-  // ---------- "bunch of kids" welcome voice ----------
+  // ---------- robotic welcome voice ----------
   // Kick off voice loading as early as possible (iOS Safari especially is slow to
   // populate this list, and only starts once something calls getVoices()).
   if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
@@ -35,33 +35,26 @@
 
   async function speakWelcome() {
     if (!('speechSynthesis' in window)) return;
-    const phrase = 'Welcome to uh-DON Games!';
+    const phrase = 'Welcome to uh don Games!';
     const allVoices = await getVoicesAsync();
-    const novelty = ['bad news', 'good news', 'bahh', 'bells', 'boing', 'bubbles', 'cellos', 'jester',
-      'organ', 'pipe organ', 'trinoids', 'whisper', 'wobble', 'zarvox', 'albert', 'fred', 'junior', 'ralph'];
-    const isClear = (v) => novelty.indexOf(v.name.toLowerCase()) === -1;
-    const preferred = ['samantha', 'aaron', 'eddy', 'flo', 'nicky', 'allison', 'susan', 'tom', 'fiona'];
-    let americanVoices = allVoices.filter((v) => v.lang === 'en-US' && isClear(v));
-    if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang === 'en-US');
-    if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang && v.lang.indexOf('en') === 0);
-    americanVoices = americanVoices.slice().sort((a, b) => {
-      const an = preferred.indexOf(a.name.toLowerCase().split(' ')[0]);
-      const bn = preferred.indexOf(b.name.toLowerCase().split(' ')[0]);
-      return (an === -1 ? 99 : an) - (bn === -1 ? 99 : bn);
-    });
+
+    // Prefer an actual robot-style system voice (macOS/iOS ship "Zarvox" and
+    // "Trinoids" for exactly this). If the device doesn't have one, fall back
+    // to a normal English voice and fake the robotic sound with pitch/rate.
+    const robotNames = ['zarvox', 'trinoids'];
+    let voice = allVoices.find((v) => robotNames.indexOf(v.name.toLowerCase()) !== -1);
+    const isRealRobot = !!voice;
+    if (!voice) voice = allVoices.find((v) => v.lang === 'en-US');
+    if (!voice) voice = allVoices.find((v) => v.lang && v.lang.indexOf('en') === 0);
+
     window.speechSynthesis.cancel();
-    const voiceCount = 4;
-    for (let i = 0; i < voiceCount; i++) {
-      const u = new SpeechSynthesisUtterance(phrase);
-      u.lang = 'en-US';
-      u.pitch = 1.1 + Math.random() * 0.5;
-      u.rate = 0.92 + Math.random() * 0.16;
-      u.volume = 1;
-      if (americanVoices.length) {
-        u.voice = americanVoices[i % americanVoices.length];
-      }
-      window.speechSynthesis.speak(u);
-    }
+    const u = new SpeechSynthesisUtterance(phrase);
+    u.lang = 'en-US';
+    if (voice) u.voice = voice;
+    u.pitch = isRealRobot ? 1.0 : 0.3;
+    u.rate = isRealRobot ? 0.95 : 0.82;
+    u.volume = 1;
+    window.speechSynthesis.speak(u);
   }
 
   const soundBtn = document.getElementById('soundBtn');

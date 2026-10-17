@@ -1,20 +1,35 @@
 (function () {
   // ---------- "bunch of kids" welcome voice ----------
+  // Kick off voice loading as early as possible (iOS Safari especially is slow to
+  // populate this list, and only starts once something calls getVoices()).
+  if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
+
   function getVoicesAsync() {
     return new Promise((resolve) => {
-      const existing = window.speechSynthesis.getVoices();
-      if (existing.length) { resolve(existing); return; }
-      let settled = false;
-      window.speechSynthesis.onvoiceschanged = () => {
-        if (settled) return;
-        settled = true;
-        resolve(window.speechSynthesis.getVoices());
+      const tryNow = () => {
+        const list = window.speechSynthesis.getVoices();
+        return list.length ? list : null;
       };
-      setTimeout(() => {
+      const immediate = tryNow();
+      if (immediate) { resolve(immediate); return; }
+
+      let settled = false;
+      const finish = (list) => {
         if (settled) return;
         settled = true;
-        resolve(window.speechSynthesis.getVoices());
-      }, 1200);
+        clearInterval(poll);
+        resolve(list);
+      };
+      window.speechSynthesis.onvoiceschanged = () => {
+        const list = tryNow();
+        if (list) finish(list);
+      };
+      // iOS Safari sometimes never fires onvoiceschanged, so also poll directly.
+      const poll = setInterval(() => {
+        const list = tryNow();
+        if (list) finish(list);
+      }, 150);
+      setTimeout(() => finish(window.speechSynthesis.getVoices()), 3000);
     });
   }
 
@@ -25,9 +40,15 @@
     const novelty = ['bad news', 'good news', 'bahh', 'bells', 'boing', 'bubbles', 'cellos', 'jester',
       'organ', 'pipe organ', 'trinoids', 'whisper', 'wobble', 'zarvox', 'albert', 'fred', 'junior', 'ralph'];
     const isClear = (v) => novelty.indexOf(v.name.toLowerCase()) === -1;
+    const preferred = ['samantha', 'aaron', 'eddy', 'flo', 'nicky', 'allison', 'susan', 'tom', 'fiona'];
     let americanVoices = allVoices.filter((v) => v.lang === 'en-US' && isClear(v));
     if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang === 'en-US');
     if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang && v.lang.indexOf('en') === 0);
+    americanVoices = americanVoices.slice().sort((a, b) => {
+      const an = preferred.indexOf(a.name.toLowerCase().split(' ')[0]);
+      const bn = preferred.indexOf(b.name.toLowerCase().split(' ')[0]);
+      return (an === -1 ? 99 : an) - (bn === -1 ? 99 : bn);
+    });
     window.speechSynthesis.cancel();
     const voiceCount = 4;
     for (let i = 0; i < voiceCount; i++) {

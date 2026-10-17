@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ADANGAMES</title>
+<meta name="description" content="Adan's own game site — free games made just for him.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231e90ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="stars-bg" aria-hidden="true"></div>
+  <h1 class="welcome-title">WELCOME TO<br><span>ADANGAMES</span></h1>
+
+  <div class="mouse-wrap">
+    <svg class="gaming-mouse" viewBox="0 0 200 300" role="img" aria-label="A white gaming mouse with a glowing blue light">
+      <defs>
+        <radialGradient id="bodyShade" cx="35%" cy="25%" r="80%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#d7dbe2"/>
+        </radialGradient>
+        <radialGradient id="blueGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#bfe9ff"/>
+          <stop offset="45%" stop-color="#3fb4ff"/>
+          <stop offset="100%" stop-color="#0066cc"/>
+        </radialGradient>
+        <filter id="softBlur" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="10"/>
+        </filter>
+      </defs>
+
+      <ellipse cx="100" cy="280" rx="55" ry="10" fill="#000" opacity="0.12"/>
+
+      <path d="M100 8
+               C 165 8, 190 70, 190 150
+               C 190 230, 160 292, 100 292
+               C 40 292, 10 230, 10 150
+               C 10 70, 35 8, 100 8 Z"
+            fill="url(#bodyShade)" stroke="#b9bfc9" stroke-width="2"/>
+
+      <path d="M100 10 L100 150" stroke="#c7cbd3" stroke-width="2" fill="none" opacity="0.8"/>
+
+      <rect x="88" y="34" width="24" height="46" rx="12" fill="#e9ebf0" stroke="#b9bfc9" stroke-width="1.5"/>
+      <line x1="100" y1="42" x2="100" y2="72" stroke="#9aa0ab" stroke-width="3" stroke-linecap="round"/>
+
+      <circle class="glow-pulse" cx="100" cy="175" r="30" fill="#3fb4ff" filter="url(#softBlur)" opacity="0.65"/>
+      <circle cx="100" cy="175" r="18" fill="url(#blueGlow)"/>
+      <circle cx="93" cy="168" r="4" fill="#ffffff" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <button id="soundBtn" class="sound-btn" type="button">🔊 Tap to hear ADANGAMES say hi!</button>
+</header>
+
+<main>
+  <h2 class="section-title">Pick a game!</h2>
+  <div class="games-grid">
+
+    <article class="game-card" data-game="factory" tabindex="0" role="button" aria-label="Play Spooky Toy Factory">
+      <div class="thumb thumb-factory" aria-hidden="true">
+        <span class="thumb-emoji">🧸</span>
+        <span class="thumb-emoji ghost">👀</span>
+      </div>
+      <h3>Spooky Toy Factory</h3>
+      <p>Sneak past the toy monster and grab every star!</p>
+      <span class="play-tag">Tap to play &rarr;</span>
+    </article>
+
+    <article class="game-card" data-game="pets" tabindex="0" role="button" aria-label="Play Pet Collector">
+      <div class="thumb thumb-pets" aria-hidden="true">
+        <span class="thumb-emoji">🐶</span>
+        <span class="thumb-emoji">🐱</span>
+        <span class="thumb-emoji">🐉</span>
+      </div>
+      <h3>Pet Collector</h3>
+      <p>Hatch eggs and collect pets — every single pet is FREE!</p>
+      <span class="play-tag">Tap to play &rarr;</span>
+    </article>
+
+    <article class="game-card" data-game="blocks" tabindex="0" role="button" aria-label="Play Block World">
+      <div class="thumb thumb-blocks" aria-hidden="true">
+        <span class="block b1"></span><span class="block b2"></span><span class="block b3"></span>
+      </div>
+      <h3>Block World</h3>
+      <p>Place blocks and build anything you can imagine.</p>
+      <span class="play-tag">Tap to play &rarr;</span>
+    </article>
+
+  </div>
+</main>
+
+<footer>
+  <p>Made with ❤️ for Adan</p>
+</footer>
+
+<div id="gameModal" class="modal hidden">
+  <div class="modal-inner">
+    <div class="modal-topbar">
+      <h2 id="modalTitle"></h2>
+      <button id="closeModal" class="close-btn" type="button" aria-label="Close game">✕</button>
+    </div>
+    <div id="modalGameArea" class="modal-game-area"></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/game-factory.js"></script>
+<script src="js/game-pets.js"></script>
+<script src="js/game-blocks.js"></script>
+</body>
+</html>

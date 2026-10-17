@@ -1,18 +1,43 @@
 (function () {
   // ---------- "bunch of kids" welcome voice ----------
-  function speakWelcome() {
+  function getVoicesAsync() {
+    return new Promise((resolve) => {
+      const existing = window.speechSynthesis.getVoices();
+      if (existing.length) { resolve(existing); return; }
+      let settled = false;
+      window.speechSynthesis.onvoiceschanged = () => {
+        if (settled) return;
+        settled = true;
+        resolve(window.speechSynthesis.getVoices());
+      };
+      setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        resolve(window.speechSynthesis.getVoices());
+      }, 1200);
+    });
+  }
+
+  async function speakWelcome() {
     if (!('speechSynthesis' in window)) return;
-    const phrase = 'Welcome to Adan Games!';
-    const voices = window.speechSynthesis.getVoices();
+    const phrase = 'Welcome to uh-DON Games!';
+    const allVoices = await getVoicesAsync();
+    const novelty = ['bad news', 'good news', 'bahh', 'bells', 'boing', 'bubbles', 'cellos', 'jester',
+      'organ', 'pipe organ', 'trinoids', 'whisper', 'wobble', 'zarvox', 'albert', 'fred', 'junior', 'ralph'];
+    const isClear = (v) => novelty.indexOf(v.name.toLowerCase()) === -1;
+    let americanVoices = allVoices.filter((v) => v.lang === 'en-US' && isClear(v));
+    if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang === 'en-US');
+    if (!americanVoices.length) americanVoices = allVoices.filter((v) => v.lang && v.lang.indexOf('en') === 0);
     window.speechSynthesis.cancel();
     const voiceCount = 4;
     for (let i = 0; i < voiceCount; i++) {
       const u = new SpeechSynthesisUtterance(phrase);
-      u.pitch = 1.4 + Math.random() * 0.8;
-      u.rate = 0.95 + Math.random() * 0.3;
+      u.lang = 'en-US';
+      u.pitch = 1.1 + Math.random() * 0.5;
+      u.rate = 0.92 + Math.random() * 0.16;
       u.volume = 1;
-      if (voices.length) {
-        u.voice = voices[(i + Math.floor(Math.random() * voices.length)) % voices.length];
+      if (americanVoices.length) {
+        u.voice = americanVoices[i % americanVoices.length];
       }
       window.speechSynthesis.speak(u);
     }
